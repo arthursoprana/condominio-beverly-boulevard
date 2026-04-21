@@ -300,7 +300,7 @@ def gerar_html(todos: dict[str, list[dict]], img_paths: dict[str, Path], output:
     )
 
     # ── Montar HTML completo ──
-    pcfg = {"scrollZoom": False, "displayModeBar": False}
+    pcfg = {"scrollZoom": False, "displayModeBar": False, "responsive": True}
     div1 = fig1.to_html(include_plotlyjs="cdn", full_html=False, div_id="chart1", config=pcfg)
     div2 = fig2.to_html(include_plotlyjs=False, full_html=False, div_id="chart2", config=pcfg)
     div3 = fig3.to_html(include_plotlyjs=False, full_html=False, div_id="chart3", config=pcfg)
@@ -330,7 +330,8 @@ def gerar_html(todos: dict[str, list[dict]], img_paths: dict[str, Path], output:
   body {{ font-family: system-ui, sans-serif; background: #f8f9fa; margin: 0; padding: 20px; }}
   h1 {{ text-align: center; color: #2c3e50; margin-bottom: 30px; }}
   .chart {{ max-width: 1000px; margin: 0 auto 30px; background: white;
-            border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 10px; }}
+            border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 10px;
+            min-height: 380px; overflow-x: auto; }}
   .viewer {{ max-width: 1000px; margin: 0 auto 30px; background: white;
              border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; }}
   .viewer h2 {{ margin: 0 0 15px; color: #2c3e50; }}
