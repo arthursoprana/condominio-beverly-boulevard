@@ -300,9 +300,10 @@ def gerar_html(todos: dict[str, list[dict]], img_paths: dict[str, Path], output:
     )
 
     # ── Montar HTML completo ──
-    div1 = fig1.to_html(include_plotlyjs="cdn", full_html=False, div_id="chart1")
-    div2 = fig2.to_html(include_plotlyjs=False, full_html=False, div_id="chart2")
-    div3 = fig3.to_html(include_plotlyjs=False, full_html=False, div_id="chart3")
+    pcfg = {"scrollZoom": False, "displayModeBar": False}
+    div1 = fig1.to_html(include_plotlyjs="cdn", full_html=False, div_id="chart1", config=pcfg)
+    div2 = fig2.to_html(include_plotlyjs=False, full_html=False, div_id="chart2", config=pcfg)
+    div3 = fig3.to_html(include_plotlyjs=False, full_html=False, div_id="chart3", config=pcfg)
 
     # ── Encode imagens como base64 ──
     img_data_js = {}
@@ -323,6 +324,7 @@ def gerar_html(todos: dict[str, list[dict]], img_paths: dict[str, Path], output:
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Condomínio Beverly Boulevard — Evolução Financeira</title>
 <style>
   body {{ font-family: system-ui, sans-serif; background: #f8f9fa; margin: 0; padding: 20px; }}
