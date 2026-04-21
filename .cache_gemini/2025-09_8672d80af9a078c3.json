@@ -1,0 +1,242 @@
+[
+  {
+    "descricao": "Saldo Anterior",
+    "valor": 121730.35,
+    "tipo": "saldo"
+  },
+  {
+    "descricao": "RECEITAS",
+    "valor": 54943.02,
+    "tipo": "total"
+  },
+  {
+    "descricao": "Receitas Operacionais",
+    "valor": 53794.96,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Taxas de Condomínio",
+    "valor": 34368.15,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Taxas Fundo de Reserva",
+    "valor": 3436.81,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Multas e Juros",
+    "valor": 117.29,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Taxa de Gás",
+    "valor": 1344.46,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Venda de Registros e Válvula de Gás - Eliane Andrea",
+    "valor": 161.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Fundo de Encargos Trabalhista",
+    "valor": 2516.96,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Despesa com Manutenções",
+    "valor": 1911.66,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Recuperação Predial Externa",
+    "valor": 9938.63,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Receitas Financeiras",
+    "valor": 1148.06,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Rendimento de Poupança",
+    "valor": 1148.06,
+    "tipo": "item"
+  },
+  {
+    "descricao": "DESPESAS",
+    "valor": 41041.35,
+    "tipo": "total"
+  },
+  {
+    "descricao": "Despesas com Pessoal",
+    "valor": 27931.56,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Salários/Outros.Proventos",
+    "valor": 12967.63,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Vale Refeição",
+    "valor": 4033.44,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Vale Transporte",
+    "valor": 219.4,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Medicina do Trabalho",
+    "valor": 550.17,
+    "tipo": "item"
+  },
+  {
+    "descricao": "GPS s/ Folha e Pró-Labore",
+    "valor": 6758.45,
+    "tipo": "item"
+  },
+  {
+    "descricao": "FGTS",
+    "valor": 1303.53,
+    "tipo": "item"
+  },
+  {
+    "descricao": "PIS s/ Folha",
+    "valor": 162.94,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Mensalidade Sindical",
+    "valor": 46.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "ISS s/ Serviços",
+    "valor": 37.8,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Remuneração de Síndico (a)",
+    "valor": 1852.2,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Despesas Administrativas",
+    "valor": 12994.68,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Energia Elétrica",
+    "valor": 471.94,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Água e Esgoto",
+    "valor": 3611.2,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Telefone",
+    "valor": 282.12,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Juizado Especial Cível conforme Ofício 310082159719",
+    "valor": 2540.65,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Material Limpeza - Atacado Catarinense NF 272594",
+    "valor": 475.65,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Honorário Desterro",
+    "valor": 1031.7,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Manutenção Elevadores - Silva & Machado NF 3540",
+    "valor": 534.18,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Seguro - Tokio Marine",
+    "valor": 65.35,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Gás",
+    "valor": 2052.32,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Reparo Hidraulico - Ilha Nova Motobombas Serviços Ltda NF 47/66/48/68 - 3/5",
+    "valor": 1073.05,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Reparo Hidraulico - Ilha Nova Motobombas Serviços Ltda NF 87/96",
+    "valor": 519.39,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Manutenção Elevadores - Elevacon NF 12722 04/05",
+    "valor": 310.3,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Retenção CSLL COFINS,PIS PASEP IN SRF 381",
+    "valor": 26.83,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Despesas Financeiras",
+    "valor": 115.11,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Desp. c/ Boletos Bancários",
+    "valor": 46.27,
+    "tipo": "item"
+  },
+  {
+    "descricao": "IR s/ Poupança",
+    "valor": 68.84,
+    "tipo": "item"
+  },
+  {
+    "descricao": "CONTA TRANSITORIA",
+    "valor": 0.0,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Conta Transitória",
+    "valor": 0.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Movimentação Transitória - Receita",
+    "valor": -20650.83,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Movimentação Transitória - Despesa",
+    "valor": 20650.83,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Receitas - Despesas",
+    "valor": 13901.67,
+    "tipo": "total"
+  },
+  {
+    "descricao": "Saldo Atual",
+    "valor": 135632.02,
+    "tipo": "saldo"
+  }
+]

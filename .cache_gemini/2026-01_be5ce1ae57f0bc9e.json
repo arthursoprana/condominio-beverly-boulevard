@@ -1,0 +1,202 @@
+[
+  {
+    "descricao": "Saldo Anterior",
+    "valor": 162008.49,
+    "tipo": "saldo"
+  },
+  {
+    "descricao": "RECEITAS",
+    "valor": 62139.94,
+    "tipo": "total"
+  },
+  {
+    "descricao": "Receitas Operacionais",
+    "valor": 61847.26,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Taxas de Condomínio",
+    "valor": 40144.74,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Taxas Fundo de Reserva",
+    "valor": 4014.47,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Multas e Juros",
+    "valor": 145.63,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Taxa de Gás",
+    "valor": 632.14,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Fundo de Encargos Trabalhista",
+    "valor": 2940.01,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Despesa com Manutenções",
+    "valor": 2232.97,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Recuperação Predial Externa",
+    "valor": 11737.3,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Receitas Financeiras",
+    "valor": 292.68,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Rendimento de Poupança",
+    "valor": 292.68,
+    "tipo": "item"
+  },
+  {
+    "descricao": "DESPESAS",
+    "valor": 44028.81,
+    "tipo": "total"
+  },
+  {
+    "descricao": "Despesas com Pessoal",
+    "valor": 29291.93,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Salários/Outros Proventos",
+    "valor": 9953.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Férias",
+    "valor": 7500.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "FGTS",
+    "valor": 2840.89,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Mensalidade Sindical",
+    "valor": 46.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "ISS s/ Serviços",
+    "valor": 43.53,
+    "tipo": "item"
+  },
+  {
+    "descricao": "INSS RETIDO",
+    "valor": 7056.31,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Remuneração de Síndico (a)",
+    "valor": 1852.2,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Despesas Administrativas",
+    "valor": 14685.57,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Energia Elétrica",
+    "valor": 1222.03,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Água e Esgoto",
+    "valor": 2631.04,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Telefone",
+    "valor": 277.06,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Despesas de Manutenção",
+    "valor": 376.49,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Taxas e Emolumentos Governamentais",
+    "valor": 2063.18,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Honorários Contábeis",
+    "valor": 1031.7,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Serviços Manut. Elevadores",
+    "valor": 3355.35,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Seguros",
+    "valor": 1754.87,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Gás",
+    "valor": 644.67,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Manut. Contra Incêndio",
+    "valor": 1329.18,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Despesas Financeiras",
+    "valor": 51.31,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Despesas Bancárias",
+    "valor": 51.31,
+    "tipo": "item"
+  },
+  {
+    "descricao": "CONTA TRANSITÓRIA",
+    "valor": 0.0,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Conta Transitória",
+    "valor": 0.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Movimentação Transitória - Receita",
+    "valor": -26675.57,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Movimentação Transitória - Despesa",
+    "valor": 26675.57,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Receitas - Despesas",
+    "valor": 18111.13,
+    "tipo": "total"
+  },
+  {
+    "descricao": "Saldo Atual",
+    "valor": 180119.62,
+    "tipo": "saldo"
+  }
+]

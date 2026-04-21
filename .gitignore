@@ -1,7 +1,5 @@
 .pixi/
-.cache_gemini/
 __pycache__/
 *.xlsx
-imagens/
 original/
 demonstrativos*.html

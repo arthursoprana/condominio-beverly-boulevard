@@ -1,0 +1,302 @@
+[
+  {
+    "descricao": "Saldo Anterior",
+    "valor": 167717.16,
+    "tipo": "saldo"
+  },
+  {
+    "descricao": "RECEITAS",
+    "valor": 61161.3,
+    "tipo": "total"
+  },
+  {
+    "descricao": "Receitas Operacionais",
+    "valor": 59596.86,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Taxas de Condomínio",
+    "valor": 38546.83,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Taxas Fundo de Reserva",
+    "valor": 3854.68,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Multas e Juros",
+    "valor": 63.57,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Taxa de Gás",
+    "valor": 924.58,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Fundo de Encargos Trabalhista",
+    "valor": 2822.97,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Despesa com Manutenções",
+    "valor": 2144.11,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Recuperação Predial Externa",
+    "valor": 11240.12,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Receitas Financeiras",
+    "valor": 1562.98,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Rendimento de Poupança",
+    "valor": 1562.98,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Recuperação de Ativos",
+    "valor": 1.46,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Multa, Juros e Correção de Cobrança",
+    "valor": 1.46,
+    "tipo": "item"
+  },
+  {
+    "descricao": "DESPESAS",
+    "valor": 66869.97,
+    "tipo": "total"
+  },
+  {
+    "descricao": "Despesas com Pessoal",
+    "valor": 47943.06,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Salários/Outros.Proventos",
+    "valor": 17473.63,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Vale Refeição",
+    "valor": 2859.24,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Vale Transporte",
+    "valor": 219.4,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Férias Sandro Ricardo",
+    "valor": 3868.97,
+    "tipo": "item"
+  },
+  {
+    "descricao": "GPS s/ Folha e Pró-Labore",
+    "valor": 12610.47,
+    "tipo": "item"
+  },
+  {
+    "descricao": "FGTS",
+    "valor": 2056.24,
+    "tipo": "item"
+  },
+  {
+    "descricao": "PIS s/ Folha",
+    "valor": 340.07,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Mensalidade Sindical",
+    "valor": 46.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "13º Salário",
+    "valor": 6385.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "ISS s/ Serviços",
+    "valor": 231.84,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Remuneração de Síndico (a)",
+    "valor": 1852.2,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Despesas Administrativas",
+    "valor": 18744.76,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Energia Elétrica",
+    "valor": 1151.05,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Água e Esgoto",
+    "valor": 2650.56,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Telefone",
+    "valor": 277.06,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Carga Gás Ar Condicionado - Clei de Liz NF 153",
+    "valor": 400.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Inspeção e Laudo Sistema Incêndio - Eder Pinheiro NF 142",
+    "valor": 1500.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Cloro/ Clarificante/ Reagente - Marpe Piscinas NF 10376",
+    "valor": 623.09,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Material Limpeza - Atacado Catarinense NF 279594",
+    "valor": 664.86,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Honorário Desterro",
+    "valor": 2020.7,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Manutenção Elevadores - Silva & Machado NF 3891",
+    "valor": 534.18,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Seguro - Axa Seguros",
+    "valor": 1689.52,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Seguro - Tokio Marine",
+    "valor": 65.35,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Gás",
+    "valor": 928.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Material Manutenções - Casa das Lampadas NFCe 115924",
+    "valor": 340.2,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Material elétrico - Fabiano Pires Vardaneqa NF 62",
+    "valor": 561.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Manutenção Sistema de Iluminação - Eder Pinheiro NF 152",
+    "valor": 380.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Manutenção Elevadores - Elevacon NF 13715 02/03",
+    "valor": 2580.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Manutenção Elevadores - Elevacon NF 13667",
+    "valor": 344.7,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Manutenção Elevadores - Elevacon NF 84451 02/03",
+    "valor": 430.67,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Manut.Contra Incendio",
+    "valor": 795.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Serviço Serralheiro/ Marceneiro",
+    "valor": 245.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Despesa Copa - Koch - NFCe 60624",
+    "valor": 77.45,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Conserto Portão - Objetivo Segurança Eletronica NF 269/188",
+    "valor": 369.27,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Material Pintura - Millium NF 124961",
+    "valor": 117.1,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Despesas Financeiras",
+    "valor": 182.15,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Desp. c/ Boletos Bancários",
+    "valor": 96.81,
+    "tipo": "item"
+  },
+  {
+    "descricao": "IR s/ Poupança",
+    "valor": 85.34,
+    "tipo": "item"
+  },
+  {
+    "descricao": "CONTA TRANSITÓRIA",
+    "valor": 0.0,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Conta Transitória",
+    "valor": 0.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Movimentação Transitória - Receita",
+    "valor": -37048.06,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Movimentação Transitória - Despesa",
+    "valor": 37048.06,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Receitas - Despesas",
+    "valor": -5708.67,
+    "tipo": "total"
+  },
+  {
+    "descricao": "Saldo Atual",
+    "valor": 162008.49,
+    "tipo": "saldo"
+  }
+]
