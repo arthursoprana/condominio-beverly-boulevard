@@ -250,7 +250,7 @@ def gerar_html(todos: dict[str, list[dict]], img_paths: dict[str, Path], output:
     def serie(nome):
         return [pivot.get(nome, {}).get(m) for m in meses]
 
-    COMMON = dict(template="plotly_white", hovermode="x unified",
+    COMMON = dict(template="plotly_white", hovermode="closest",
                   margin=dict(l=60, r=30, t=50, b=40), dragmode=False)
 
     # ── Chart 1: Receitas × Despesas × Saldo Atual (line) ──
