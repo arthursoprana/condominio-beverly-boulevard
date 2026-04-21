@@ -320,6 +320,17 @@ def gerar_html(todos: dict[str, list[dict]], img_paths: dict[str, Path], output:
     )
     img_map_js = json.dumps(img_data_js)
 
+    # ── Resumo do último mês ──
+    ultimo = meses[-1]
+    def val_ultimo(nome):
+        v = pivot.get(nome, {}).get(ultimo)
+        if v is None:
+            return "—"
+        return f"R$ {v:,.2f}"
+    resumo_saldo = val_ultimo("Saldo Atual")
+    resumo_receitas = val_ultimo("RECEITAS")
+    resumo_despesas = val_ultimo("DESPESAS")
+
     html = f"""<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -339,10 +350,24 @@ def gerar_html(todos: dict[str, list[dict]], img_paths: dict[str, Path], output:
                     border: 1px solid #ccc; margin-bottom: 15px; }}
   .viewer img {{ max-width: 100%; border: 1px solid #e0e0e0; border-radius: 4px; }}
   .viewer .placeholder {{ color: #999; font-style: italic; }}
+  .summary {{ max-width: 1000px; margin: 0 auto 30px; display: flex; gap: 15px; flex-wrap: wrap; }}
+  .summary .card {{ flex: 1; min-width: 200px; background: white; border-radius: 8px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; text-align: center; }}
+  .summary .card .label {{ font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }}
+  .summary .card .value {{ font-size: 26px; font-weight: 700; }}
+  .summary .card .month {{ font-size: 12px; color: #aaa; margin-top: 4px; }}
+  .summary .card.receitas .value {{ color: #2ecc71; }}
+  .summary .card.despesas .value {{ color: #e74c3c; }}
+  .summary .card.saldo .value {{ color: #3498db; }}
 </style>
 </head>
 <body>
 <h1>Condomínio Beverly Boulevard — Evolução Financeira</h1>
+<div class="summary">
+  <div class="card receitas"><div class="label">Receitas</div><div class="value">{resumo_receitas}</div><div class="month">{ultimo}</div></div>
+  <div class="card despesas"><div class="label">Despesas</div><div class="value">{resumo_despesas}</div><div class="month">{ultimo}</div></div>
+  <div class="card saldo"><div class="label">Saldo Atual</div><div class="value">{resumo_saldo}</div><div class="month">{ultimo}</div></div>
+</div>
 <div class="chart">{div1}</div>
 <div class="chart">{div2}</div>
 <div class="chart">{div3}</div>
