@@ -1,0 +1,28 @@
+[workspace]
+name = "cond-beverly-boulevard"
+version = "0.1.0"
+description = "Extração de dados de demonstrativos PDF"
+channels = ["conda-forge"]
+platforms = ["win-64"]
+
+[dependencies]
+python = ">=3.11"
+tesseract = ">=5.5.2,<6"
+poppler = "*"
+pytesseract = "*"
+pillow = "*"
+pdf2image = "*"
+openpyxl = "*"
+ollama-python = "*"
+pandas = "*"
+libopencv = "*"
+py-opencv = "*"
+pip = ">=26.0.1,<27"
+
+[pypi-dependencies]
+pytesseract = "*"
+pillow = "*"
+pandas = "*"
+google-genai = "*"
+plotly = "*"
+
