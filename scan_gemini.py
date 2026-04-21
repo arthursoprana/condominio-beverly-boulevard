@@ -286,7 +286,7 @@ def gerar_html(todos: dict[str, list[dict]], img_paths: dict[str, Path], output:
 
     # ── Chart 3: Composição das Despesas (stacked bar) ──
     fig3 = go.Figure()
-    cores_desp = [("Despesas com Pessoal", "#e74c3c"), ("Despesas Administrativas", "#e67e22"), ("Despesas Financeiras", "#f39c12")]
+    cores_desp = [("Despesas com Pessoal", "#e74c3c"), ("Despesas Administrativas", "#e67e22"), ("Despesas Financeiras", "#9b59b6")]
     for nome, cor in cores_desp:
         fig3.add_trace(go.Bar(
             x=meses, y=serie(nome), name=nome, marker_color=cor,
