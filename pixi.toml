@@ -7,22 +7,14 @@ platforms = ["win-64"]
 
 [dependencies]
 python = ">=3.11"
-tesseract = ">=5.5.2,<6"
-poppler = "*"
-pytesseract = "*"
-pillow = "*"
-pdf2image = "*"
 openpyxl = "*"
-ollama-python = "*"
-pandas = "*"
-libopencv = "*"
-py-opencv = "*"
 pip = ">=26.0.1,<27"
 
 [pypi-dependencies]
-pytesseract = "*"
-pillow = "*"
-pandas = "*"
 google-genai = "*"
 plotly = "*"
+
+[tasks]
+scan = { cmd = "python scan_gemini.py && python -c \"import shutil; shutil.copy('demonstrativos.html', 'docs/index.html')\"", description = "Extract data from images and generate Excel + HTML dashboard" }
+deploy = { cmd = "pixi run scan && git add . && git commit -m \"Update dashboard\" && git push", description = "Run scan and deploy to GitHub Pages" }
 
