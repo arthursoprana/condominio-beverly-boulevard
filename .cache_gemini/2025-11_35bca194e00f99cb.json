@@ -21,37 +21,37 @@
   },
   {
     "descricao": "Taxas Fundo de Reserva",
-    "valor": 217.59,
+    "valor": 3981.07,
     "tipo": "item"
   },
   {
     "descricao": "Multas e Juros",
-    "valor": 1099.91,
+    "valor": 217.59,
     "tipo": "item"
   },
   {
     "descricao": "Taxa de Gás",
-    "valor": 2570.12,
+    "valor": 1099.91,
     "tipo": "item"
   },
   {
     "descricao": "Tribunal de Justiça de Santa Catarina",
-    "valor": 2915.55,
+    "valor": 2570.12,
     "tipo": "item"
   },
   {
     "descricao": "Fundo de Encargos Trabalhista",
-    "valor": 2214.39,
+    "valor": 2915.55,
     "tipo": "item"
   },
   {
     "descricao": "Despesa com Manutenções",
-    "valor": 11633.29,
+    "valor": 2214.39,
     "tipo": "item"
   },
   {
     "descricao": "Recuperação Predial Externa",
-    "valor": 1402.03,
+    "valor": 11633.29,
     "tipo": "item"
   },
   {

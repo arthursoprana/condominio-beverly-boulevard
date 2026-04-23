@@ -15,9 +15,11 @@ Saída: planilha demonstrativos.xlsx com evolução mensal e gráficos.
 
 import argparse
 import base64
+from collections import Counter
 import hashlib
 import json
 import os
+import re
 import sys
 from datetime import date
 from pathlib import Path
@@ -25,6 +27,7 @@ from pathlib import Path
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.properties import Outline
 import plotly.graph_objects as go
 from google import genai
 from google.genai import types
@@ -67,6 +70,197 @@ Regras adicionais:
 
 Retorne APENAS um array JSON, sem texto extra.
 """
+
+# ── Normalização de descrições via LLM (variantes OCR → forma canônica) ───
+NORMALIZACAO_CACHE = CACHE_DIR / "_normalizacao.json"
+
+# Ordem dos tipos para agrupar na aba Evolução
+_TIPO_ORDEM = {"saldo": 0, "total": 1, "subtotal": 2, "item": 3}
+
+PROMPT_NORMALIZACAO = """Você recebe uma lista de descrições extraídas por OCR de demonstrativos financeiros
+mensais de um condomínio. Muitas são variantes da mesma coisa (acentuação, pontuação, espaçamento).
+
+Sua tarefa: identificar grupos de descrições que se referem ao MESMO item e escolher a forma
+canônica (mais correta/completa) para cada grupo.
+
+Regras:
+- Só agrupe descrições que realmente são o mesmo item (ex: "Honorario Desterro" e "Honorário Desterro").
+- NÃO agrupe itens diferentes que apenas têm prefixo parecido mas NF/parcela diferente
+  (ex: "Manutenção Elevadores - Elevacon NF 12255" e "NF 12495" são pagamentos distintos).
+- NÃO agrupe "Seguros" (subtotal) com "Seguro - Axa" (item individual) — tipos diferentes.
+- A forma canônica deve usar acentuação correta do português.
+- NÃO expanda abreviações (mantenha "s/", "c/", "Manut.", "Desp." como estão).
+- NÃO adicione hifens, preposições ou mude formatação além de corrigir acentuação e espaçamento.
+- Descrições que não têm variantes não precisam aparecer no resultado.
+
+Retorne APENAS um objeto JSON onde cada chave é a descrição original e o valor é a forma canônica.
+Inclua SOMENTE as descrições que precisam ser renomeadas (variantes → canônica).
+Descrições que já estão na forma correta e não têm variantes devem ser OMITIDAS.
+
+Exemplo de saída:
+{"Honorario Desterro": "Honorário Desterro", "Manut.Contra Incendio": "Manut. Contra Incêndio"}
+"""
+
+
+def _carregar_normalizacao() -> tuple[dict[str, str], set[str]]:
+    """Carrega mapa de normalização e conjunto de descrições já vistas."""
+    if NORMALIZACAO_CACHE.exists():
+        data = json.loads(NORMALIZACAO_CACHE.read_text(encoding="utf-8"))
+        if isinstance(data, dict) and "mapa" in data:
+            return data["mapa"], set(data.get("vistas", []))
+        # migrar formato antigo (só mapa)
+        return data, set(data.keys()) | set(data.values())
+    return {}, set()
+
+
+def _salvar_normalizacao(mapa: dict[str, str], vistas: set[str]):
+    """Salva mapa + descrições vistas no cache."""
+    CACHE_DIR.mkdir(exist_ok=True)
+    data = {"mapa": mapa, "vistas": sorted(vistas)}
+    NORMALIZACAO_CACHE.write_text(
+        json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
+
+def _gerar_normalizacao(todas_desc: list[str], client: genai.Client, modelo: str) -> dict[str, str]:
+    """Gera/atualiza mapa de normalização via LLM. Só chama a API se há descrições novas."""
+    mapa, vistas = _carregar_normalizacao()
+
+    novas = [d for d in todas_desc if d not in vistas]
+
+    if not novas:
+        return mapa
+
+    print(f"\n🔤 {len(novas)} descrições novas para normalizar...")
+    # Enviar TODAS as descrições (não só as novas) para contexto completo
+    lista_txt = "\n".join(f"- {d}" for d in sorted(todas_desc))
+    prompt_completo = PROMPT_NORMALIZACAO + "\n\nDescrições:\n" + lista_txt
+
+    cfg_kwargs = dict(response_mime_type="application/json", temperature=0)
+    if "lite" not in modelo.lower():
+        cfg_kwargs["thinking_config"] = types.ThinkingConfig(thinking_budget=8000)
+
+    resp = client.models.generate_content(
+        model=modelo,
+        contents=[prompt_completo],
+        config=types.GenerateContentConfig(**cfg_kwargs),
+    )
+    _registrar_chamada()
+
+    novo_mapa = json.loads(resp.text)
+    # Novas regras do LLM, mas manter edições manuais existentes (não sobrescrever)
+    novo_mapa.update(mapa)
+    mapa = novo_mapa
+
+    # Marcar TODAS as descrições atuais como vistas
+    vistas.update(todas_desc)
+
+    _salvar_normalizacao(mapa, vistas)
+    print(f"   💾 Mapa de normalização salvo ({len(mapa)} regras)")
+    return mapa
+
+
+# Mapa global preenchido em main()
+_MAPA_NORMALIZACAO: dict[str, str] = {}
+_MAPA_AGRUPAMENTO: dict[str, list[str]] = {}  # {parent: [children]}
+
+
+def _normalizar(desc: str) -> str:
+    return _MAPA_NORMALIZACAO.get(desc, desc)
+
+
+def _normalizar_todos(todos: dict[str, list[dict]]) -> dict[str, list[dict]]:
+    """Retorna cópia de `todos` com descrições normalizadas."""
+    out = {}
+    for mes, rows in todos.items():
+        out[mes] = [{**r, "descricao": _normalizar(r.get("descricao", ""))} for r in rows]
+    return out
+
+
+_RE_NF = re.compile(r'\s+[-–]?\s*NF[Cc]?[Ee]?\s*\d+.*$')
+_RE_PARCELA = re.compile(r'\s*-?\s*\d+/\d+\s*$')
+
+
+def _agregar_descricao(desc: str) -> str:
+    """Strip NF/NFCe numbers and installment suffixes for Evolução aggregation."""
+    base = _RE_NF.sub('', desc)
+    base = _RE_PARCELA.sub('', base)
+    return base.rstrip(' -')
+
+
+# ── Agrupamento de itens relacionados via LLM ─────────────────────
+AGRUPAMENTO_CACHE = CACHE_DIR / "_agrupamento.json"
+
+PROMPT_AGRUPAMENTO = """Você recebe uma lista de descrições de itens financeiros (já agregados, sem números de NF)
+de demonstrativos mensais de um condomínio.
+
+Sua tarefa: identificar grupos de itens relacionados que deveriam ser colapsados sob um nome-pai comum.
+
+Regras:
+- Só agrupe itens que são claramente variantes ou subtipos da mesma categoria.
+- O nome-pai deve ser curto e genérico (ex: "Manutenção Elevadores" para toda manutenção de elevadores).
+- Um grupo precisa ter pelo menos 2 itens.
+- Itens que não têm itens relacionados NÃO devem aparecer.
+- Itens recorrentes que aparecem todo mês sozinhos (ex: "Energia Elétrica", "Telefone") NÃO devem ser agrupados.
+- Se um item genérico já existe (ex: "Férias") e há variantes ("Férias Albanisia", "Férias Lucas"),
+  inclua o genérico como filho também.
+
+Retorne APENAS um objeto JSON onde cada chave é o nome do grupo (pai) e o valor é um array
+com os nomes dos itens filhos. Omita grupos com menos de 2 itens.
+
+Exemplo:
+{"Manutenção Elevadores": ["Manutenção Elevadores - Elevacon", "Serviços Manut. Elevadores"]}
+"""
+
+
+def _carregar_agrupamento() -> tuple[dict[str, list[str]], set[str]]:
+    if AGRUPAMENTO_CACHE.exists():
+        data = json.loads(AGRUPAMENTO_CACHE.read_text(encoding="utf-8"))
+        if isinstance(data, dict) and "mapa" in data:
+            return data["mapa"], set(data.get("vistas", []))
+    return {}, set()
+
+
+def _salvar_agrupamento(mapa: dict[str, list[str]], vistas: set[str]):
+    CACHE_DIR.mkdir(exist_ok=True)
+    data = {"mapa": mapa, "vistas": sorted(vistas)}
+    AGRUPAMENTO_CACHE.write_text(
+        json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
+
+def _gerar_agrupamento(todas_desc: list[str], client: genai.Client, modelo: str) -> dict[str, list[str]]:
+    """Gera/atualiza mapa de agrupamento via LLM. Só chama a API se há descrições novas."""
+    mapa, vistas = _carregar_agrupamento()
+
+    novas = [d for d in todas_desc if d not in vistas]
+    if not novas:
+        return mapa
+
+    print(f"\n📦 {len(novas)} descrições novas para agrupar...")
+    lista_txt = "\n".join(f"- {d}" for d in sorted(todas_desc))
+    prompt_completo = PROMPT_AGRUPAMENTO + "\nDescrições:\n" + lista_txt
+
+    cfg_kwargs = dict(response_mime_type="application/json", temperature=0)
+    if "lite" not in modelo.lower():
+        cfg_kwargs["thinking_config"] = types.ThinkingConfig(thinking_budget=8000)
+
+    resp = client.models.generate_content(
+        model=modelo,
+        contents=[prompt_completo],
+        config=types.GenerateContentConfig(**cfg_kwargs),
+    )
+    _registrar_chamada()
+
+    novo_mapa = json.loads(resp.text)
+    # Existentes têm prioridade sobre LLM (edições manuais)
+    novo_mapa.update(mapa)
+    mapa = novo_mapa
+
+    vistas.update(todas_desc)
+    _salvar_agrupamento(mapa, vistas)
+    print(f"   💾 Mapa de agrupamento salvo ({len(mapa)} grupos)")
+    return mapa
 
 
 def _ler_uso() -> dict:
@@ -210,38 +404,159 @@ def descobrir_imagens(pasta: Path) -> list[Path]:
 
 def construir_evolucao(wb: openpyxl.Workbook, todos: dict[str, list[dict]]):
     """Cria aba 'Evolução' com pivot mensal + gráficos embutidos."""
+    todos = _normalizar_todos(todos)
     meses = list(todos.keys())  # já ordenados
     if not meses:
         return
 
-    # Coletar todas as descrições (manter ordem de aparição)
+    # ── Determinar seção de cada descrição a partir da ordem do documento ──
+    # Seções do demonstrativo na ordem natural:
+    #   0: Saldo Anterior
+    #   1: RECEITAS (subtotais + itens de receita)
+    #   2: DESPESAS (subtotais + itens de despesa)
+    #   3: CONTA TRANSITÓRIA
+    #   4: Receitas - Despesas
+    #   5: Saldo Atual
+    SECAO_HEADERS = {
+        "Saldo Anterior": 0,
+        "RECEITAS": 1,
+        "DESPESAS": 2,
+        "Conta Transitória": 3, "CONTA TRANSITÓRIA": 3,
+        "Receitas - Despesas": 4,
+        "Saldo Atual": 5,
+    }
+
+    # Determinar seção e agregar itens (strip NF/parcela, somar valores)
+    secao_de = {}  # agg_desc → seção (int)
+    tipo_de = {}   # agg_desc → tipo
+    pivot = {}     # {agg_desc: {mes: valor}}
+    # Rastrear originais: {agg_desc: {mes: [(desc_original, valor), ...]}}
+    originais = {}
+    subtotal_de = {}  # agg_desc(item) → subtotal_desc
     todas_desc = []
     desc_set = set()
-    for mes in meses:
-        for r in todos[mes]:
-            d = r.get("descricao", "")
-            if d and d not in desc_set:
-                todas_desc.append(d)
-                desc_set.add(d)
 
-    # Montar lookup: desc → tipo (pega o primeiro encontrado)
-    tipo_de = {}
     for mes in meses:
+        secao_atual = -1
+        subtotal_atual = None
         for r in todos[mes]:
             d = r.get("descricao", "")
-            if d and d not in tipo_de:
-                tipo_de[d] = r.get("tipo", "item")
+            if not d:
+                continue
+            # Atualizar seção corrente
+            if d in SECAO_HEADERS:
+                secao_atual = SECAO_HEADERS[d]
 
-    # Montar pivot: {desc: {mes: valor}}
-    pivot = {}
-    for mes in meses:
-        for r in todos[mes]:
-            d = r.get("descricao", "")
-            if d:
-                pivot.setdefault(d, {})[mes] = r.get("valor")
+            tipo = r.get("tipo", "item")
+            # Só agregar itens — totais/subtotais/saldos ficam como estão
+            agg = _normalizar(_agregar_descricao(d)) if tipo == "item" else d
+
+            # Rastrear hierarquia subtotal → itens
+            if tipo == "subtotal":
+                subtotal_atual = agg
+            elif tipo in ("total", "saldo"):
+                subtotal_atual = None
+            elif tipo == "item" and subtotal_atual and agg not in subtotal_de:
+                subtotal_de[agg] = subtotal_atual
+
+            if agg not in secao_de:
+                secao_de[agg] = max(secao_atual, 0)
+            if agg not in tipo_de:
+                tipo_de[agg] = tipo
+            if agg not in desc_set:
+                todas_desc.append(agg)
+                desc_set.add(agg)
+
+            # Somar valores no pivot (múltiplas NFs → mesmo mês)
+            val = r.get("valor")
+            if val is not None:
+                bucket = pivot.setdefault(agg, {})
+                bucket[mes] = (bucket.get(mes) or 0) + val
+                # Guardar originais quando a descrição difere da agregada
+                if d != agg:
+                    originais.setdefault(agg, {}).setdefault(mes, []).append(
+                        (d, val)
+                    )
+
+    # Ordenar: por seção do documento, depois por tipo, depois alfabeticamente
+    todas_desc.sort(key=lambda d: (
+        secao_de.get(d, 99),
+        _TIPO_ORDEM.get(tipo_de.get(d, "item"), 3),
+        d.lower(),
+    ))
+
+    # ── Agrupamento hierárquico ──
+    # Mapear child → parent para itens que existem nos dados
+    # Pular grupos cujo nome já é um subtotal do documento (hierarquia já existe)
+    subtotais_existentes = {d for d in desc_set if tipo_de.get(d) == "subtotal"}
+    grupo_de = {}   # child_desc → parent_name
+    filhos_de = {}  # parent_name → [child_desc, ...]
+    for parent, children in _MAPA_AGRUPAMENTO.items():
+        if parent in subtotais_existentes:
+            continue
+        existentes = [c for c in children if c in desc_set and c not in subtotais_existentes]
+        if len(existentes) >= 2:
+            # Agrupar apenas filhos na mesma seção (majoritária)
+            sec_counts = Counter(secao_de.get(c, 2) for c in existentes)
+            secao_maj = sec_counts.most_common(1)[0][0]
+            mesma_secao = [c for c in existentes if secao_de.get(c, 2) == secao_maj]
+            if len(mesma_secao) >= 2:
+                filhos_de[parent] = sorted(mesma_secao, key=str.lower)
+                for c in mesma_secao:
+                    grupo_de[c] = parent
+
+    # Para cada pai, coletar linhas originais (pré-agregação) dos filhos
+    originais_grupo = {}  # {parent: {orig_desc: {mes: valor}}}
+    for parent, children in filhos_de.items():
+        raw = {}
+        for child in children:
+            child_orig = originais.get(child, {})
+            if child_orig:
+                # Filho tinha NFs agregadas – usar as linhas originais
+                for mes, itens in child_orig.items():
+                    for orig_desc, val in itens:
+                        raw.setdefault(orig_desc, {})[mes] = \
+                            (raw.get(orig_desc, {}).get(mes) or 0) + val
+            else:
+                # Filho sem agregação – ele próprio é o item original
+                for mes, val in pivot.get(child, {}).items():
+                    raw.setdefault(child, {})[mes] = val
+        originais_grupo[parent] = raw
+
+    # Calcular pivot para pais (soma dos filhos) e herdar seção
+    for parent, children in filhos_de.items():
+        parent_vals = {}
+        for child in children:
+            for mes in meses:
+                v = pivot.get(child, {}).get(mes)
+                if v is not None:
+                    parent_vals[mes] = (parent_vals.get(mes) or 0) + v
+        pivot[parent] = parent_vals
+        if parent not in secao_de:
+            # Usar a seção mais comum entre os filhos (voto majoritário)
+            sec_counts = Counter(secao_de.get(c, 2) for c in children)
+            secao_de[parent] = sec_counts.most_common(1)[0][0]
+        tipo_de[parent] = "item"
+        # Herdar subtotal dos filhos
+        if parent not in subtotal_de:
+            child_subs = [subtotal_de[c] for c in children if c in subtotal_de]
+            if child_subs:
+                subtotal_de[parent] = Counter(child_subs).most_common(1)[0][0]
+
+    # Reconstruir lista: remover filhos e inserir o pai na posição correta
+    todas_desc_final = [d for d in todas_desc if d not in grupo_de]
+    # Inserir pais na lista e re-ordenar pelo mesmo critério
+    for parent in filhos_de:
+        todas_desc_final.append(parent)
+    todas_desc_final.sort(key=lambda d: (
+        secao_de.get(d, 99),
+        _TIPO_ORDEM.get(tipo_de.get(d, "item"), 3),
+        d.lower(),
+    ))
 
     # Escrever aba
     ws = wb.create_sheet("Evolução", 0)
+    ws.sheet_properties.outlinePr = Outline(summaryBelow=False)
     # Cabeçalho
     ws.append(["Tipo", "Descrição"] + meses)
     for c in ws[1]:
@@ -249,24 +564,68 @@ def construir_evolucao(wb: openpyxl.Workbook, todos: dict[str, list[dict]]):
         c.fill = PatternFill("solid", fgColor="305496")
     ws.freeze_panes = "C2"
 
-    for desc in todas_desc:
-        tipo = tipo_de.get(desc, "item")
-        row_data = [tipo, desc]
+    FILL_SUBITEM = PatternFill("solid", fgColor="F2F2F2")  # cinza claro
+    FONT_SUBITEM = Font(color="666666")
+
+    def _escrever_linha(desc, valores, tipo, outline_level=0):
+        indent = "    " * outline_level
+        row_data = [tipo, indent + desc]
         for mes in meses:
-            row_data.append(pivot.get(desc, {}).get(mes))
+            row_data.append(valores.get(mes))
         ws.append(row_data)
 
-        # Estilo
         excel_row = ws.max_row
         fill = COR_TIPO.get(tipo)
+        if outline_level >= 1:
+            fill = FILL_SUBITEM
         if fill:
             for cell in ws[excel_row]:
                 cell.fill = fill
         if tipo in ("saldo", "total", "subtotal"):
             for cell in ws[excel_row]:
                 cell.font = FONTE_DESTAQUE
-        for col in range(3, 3 + len(meses)):
-            ws.cell(row=excel_row, column=col).number_format = '#,##0.00;[Red]-#,##0.00'
+        elif outline_level >= 1:
+            for cell in ws[excel_row]:
+                cell.font = FONT_SUBITEM
+
+        for i, mes in enumerate(meses):
+            col = 3 + i
+            cell = ws.cell(row=excel_row, column=col)
+            cell.number_format = '#,##0.00;[Red]-#,##0.00'
+
+        if outline_level > 0:
+            ws.row_dimensions[excel_row].outlineLevel = outline_level
+            ws.row_dimensions[excel_row].hidden = True
+
+    # Construir mapa subtotal → [filhos na ordem da lista final]
+    filhos_de_subtotal = {}
+    itens_sob_subtotal = set()
+    for d in todas_desc_final:
+        sub = subtotal_de.get(d)
+        tipo = tipo_de.get(d, "item")
+        if sub and tipo == "item":
+            filhos_de_subtotal.setdefault(sub, []).append(d)
+            itens_sob_subtotal.add(d)
+
+    for desc in todas_desc_final:
+        if desc in itens_sob_subtotal:
+            continue  # será escrito como filho do subtotal
+
+        tipo = tipo_de.get(desc, "item")
+        _escrever_linha(desc, pivot.get(desc, {}), tipo)
+
+        # Se é um subtotal, escrever seus itens (sempre visíveis)
+        if desc in filhos_de_subtotal:
+            for child in filhos_de_subtotal[desc]:
+                _escrever_linha(child, pivot.get(child, {}), "item")
+
+                # Se o filho é um grupo LLM, escrever linhas originais colapsadas
+                if child in originais_grupo:
+                    for orig in sorted(originais_grupo[child], key=str.lower):
+                        _escrever_linha(
+                            orig, originais_grupo[child][orig],
+                            "item", outline_level=1,
+                        )
 
     ws.column_dimensions["A"].width = 12
     ws.column_dimensions["B"].width = 55
@@ -279,6 +638,7 @@ def construir_evolucao(wb: openpyxl.Workbook, todos: dict[str, list[dict]]):
 
 def gerar_html(todos: dict[str, list[dict]], img_paths: dict[str, Path], output: Path):
     """Gera página HTML com gráficos interativos Plotly + visualizador de imagens."""
+    todos = _normalizar_todos(todos)
     meses = list(todos.keys())
     if len(meses) < 2:
         print("   ⚠️  Menos de 2 meses — HTML não gerado (precisa de evolução).")
@@ -513,6 +873,26 @@ def main():
         ws = wb.create_sheet()
         escrever_aba(ws, rows, mes_label)
 
+    # Normalização de descrições via LLM (cached)
+    global _MAPA_NORMALIZACAO, _MAPA_AGRUPAMENTO
+    desc_raw = {r.get("descricao", "") for rows in todos.values() for r in rows} - {""}
+    desc_agg = {_agregar_descricao(d) for d in desc_raw} - {""}
+    desc_norm = {_normalizar(d) for d in desc_agg} - {""}  # pra pegar nomes normalizados
+    todas_desc = list(desc_raw | desc_agg)
+    try:
+        _MAPA_NORMALIZACAO = _gerar_normalizacao(todas_desc, client, args.modelo)
+    except Exception as e:
+        print(f"   ⚠️  Normalização LLM falhou ({e}), usando cache existente")
+        _MAPA_NORMALIZACAO, _ = _carregar_normalizacao()
+
+    # Agrupamento de itens relacionados via LLM (cached)
+    # Usa descrições pós-normalização + agregação (só itens)
+    desc_para_agrupar = list({_normalizar(_agregar_descricao(d)) for d in desc_raw} - {""})
+    try:
+        _MAPA_AGRUPAMENTO = _gerar_agrupamento(desc_para_agrupar, client, args.modelo)
+    except Exception as e:
+        print(f"   ⚠️  Agrupamento LLM falhou ({e}), usando cache existente")
+        _MAPA_AGRUPAMENTO, _ = _carregar_agrupamento()
     # Aba Evolução (pivot, sem gráficos — plots vão no HTML)
     construir_evolucao(wb, todos)
 
