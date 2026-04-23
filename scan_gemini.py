@@ -25,7 +25,7 @@ from datetime import date
 from pathlib import Path
 
 import openpyxl
-from openpyxl.styles import Font, PatternFill, Alignment
+from openpyxl.styles import Font, PatternFill
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.properties import Outline
 import plotly.graph_objects as go
@@ -486,60 +486,52 @@ def construir_evolucao(wb: openpyxl.Workbook, todos: dict[str, list[dict]]):
     ))
 
     # ── Agrupamento hierárquico ──
-    # Mapear child → parent para itens que existem nos dados
     # Pular grupos cujo nome já é um subtotal do documento (hierarquia já existe)
     subtotais_existentes = {d for d in desc_set if tipo_de.get(d) == "subtotal"}
     grupo_de = {}   # child_desc → parent_name
     filhos_de = {}  # parent_name → [child_desc, ...]
+    originais_grupo = {}  # {parent: {orig_desc: {mes: valor}}}
     for parent, children in _MAPA_AGRUPAMENTO.items():
         if parent in subtotais_existentes:
             continue
         existentes = [c for c in children if c in desc_set and c not in subtotais_existentes]
-        if len(existentes) >= 2:
-            # Agrupar apenas filhos na mesma seção (majoritária)
-            sec_counts = Counter(secao_de.get(c, 2) for c in existentes)
-            secao_maj = sec_counts.most_common(1)[0][0]
-            mesma_secao = [c for c in existentes if secao_de.get(c, 2) == secao_maj]
-            if len(mesma_secao) >= 2:
-                filhos_de[parent] = sorted(mesma_secao, key=str.lower)
-                for c in mesma_secao:
-                    grupo_de[c] = parent
+        if len(existentes) < 2:
+            continue
+        # Agrupar apenas filhos na mesma seção (majoritária)
+        secao_maj = Counter(secao_de.get(c, 2) for c in existentes).most_common(1)[0][0]
+        mesma_secao = [c for c in existentes if secao_de.get(c, 2) == secao_maj]
+        if len(mesma_secao) < 2:
+            continue
 
-    # Para cada pai, coletar linhas originais (pré-agregação) dos filhos
-    originais_grupo = {}  # {parent: {orig_desc: {mes: valor}}}
-    for parent, children in filhos_de.items():
+        filhos_de[parent] = sorted(mesma_secao, key=str.lower)
+        for c in mesma_secao:
+            grupo_de[c] = parent
+
+        # Coletar linhas originais (pré-agregação) e calcular pivot do pai
         raw = {}
-        for child in children:
+        parent_vals = {}
+        for child in mesma_secao:
             child_orig = originais.get(child, {})
             if child_orig:
-                # Filho tinha NFs agregadas – usar as linhas originais
                 for mes, itens in child_orig.items():
                     for orig_desc, val in itens:
                         raw.setdefault(orig_desc, {})[mes] = \
                             (raw.get(orig_desc, {}).get(mes) or 0) + val
             else:
-                # Filho sem agregação – ele próprio é o item original
                 for mes, val in pivot.get(child, {}).items():
                     raw.setdefault(child, {})[mes] = val
-        originais_grupo[parent] = raw
-
-    # Calcular pivot para pais (soma dos filhos) e herdar seção
-    for parent, children in filhos_de.items():
-        parent_vals = {}
-        for child in children:
             for mes in meses:
                 v = pivot.get(child, {}).get(mes)
                 if v is not None:
                     parent_vals[mes] = (parent_vals.get(mes) or 0) + v
+        originais_grupo[parent] = raw
         pivot[parent] = parent_vals
+
         if parent not in secao_de:
-            # Usar a seção mais comum entre os filhos (voto majoritário)
-            sec_counts = Counter(secao_de.get(c, 2) for c in children)
-            secao_de[parent] = sec_counts.most_common(1)[0][0]
+            secao_de[parent] = secao_maj
         tipo_de[parent] = "item"
-        # Herdar subtotal dos filhos
         if parent not in subtotal_de:
-            child_subs = [subtotal_de[c] for c in children if c in subtotal_de]
+            child_subs = [subtotal_de[c] for c in mesma_secao if c in subtotal_de]
             if child_subs:
                 subtotal_de[parent] = Counter(child_subs).most_common(1)[0][0]
 
@@ -877,7 +869,6 @@ def main():
     global _MAPA_NORMALIZACAO, _MAPA_AGRUPAMENTO
     desc_raw = {r.get("descricao", "") for rows in todos.values() for r in rows} - {""}
     desc_agg = {_agregar_descricao(d) for d in desc_raw} - {""}
-    desc_norm = {_normalizar(d) for d in desc_agg} - {""}  # pra pegar nomes normalizados
     todas_desc = list(desc_raw | desc_agg)
     try:
         _MAPA_NORMALIZACAO = _gerar_normalizacao(todas_desc, client, args.modelo)
