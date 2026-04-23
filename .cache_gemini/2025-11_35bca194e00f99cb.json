@@ -1,0 +1,242 @@
+[
+  {
+    "descricao": "Saldo Anterior",
+    "valor": 160724.03,
+    "tipo": "saldo"
+  },
+  {
+    "descricao": "RECEITAS",
+    "valor": 65844.65,
+    "tipo": "total"
+  },
+  {
+    "descricao": "Receitas Operacionais",
+    "valor": 64442.62,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Taxas de Condomínio",
+    "valor": 39810.7,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Taxas Fundo de Reserva",
+    "valor": 217.59,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Multas e Juros",
+    "valor": 1099.91,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Taxa de Gás",
+    "valor": 2570.12,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Tribunal de Justiça de Santa Catarina",
+    "valor": 2915.55,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Fundo de Encargos Trabalhista",
+    "valor": 2214.39,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Despesa com Manutenções",
+    "valor": 11633.29,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Recuperação Predial Externa",
+    "valor": 1402.03,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Receitas Financeiras",
+    "valor": 1402.03,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Rendimento de Poupança",
+    "valor": 1402.03,
+    "tipo": "item"
+  },
+  {
+    "descricao": "DESPESAS",
+    "valor": 58851.52,
+    "tipo": "total"
+  },
+  {
+    "descricao": "Despesas com Pessoal",
+    "valor": 39406.1,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Salários/Outros Proventos",
+    "valor": 13996.63,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Vale Refeição",
+    "valor": 3620.38,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Férias Helio de Souza",
+    "valor": 4598.07,
+    "tipo": "item"
+  },
+  {
+    "descricao": "GPS s/ Folha e Pró-Labore",
+    "valor": 5725.44,
+    "tipo": "item"
+  },
+  {
+    "descricao": "FGTS",
+    "valor": 1242.64,
+    "tipo": "item"
+  },
+  {
+    "descricao": "PIS s/ Folha",
+    "valor": 155.33,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Mensalidade Sindical",
+    "valor": 46.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "13º Salário",
+    "valor": 8113.88,
+    "tipo": "item"
+  },
+  {
+    "descricao": "ISS s/ Serviços",
+    "valor": 55.53,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Remuneração de Síndico",
+    "valor": 1852.2,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Despesas Administrativas",
+    "valor": 19348.59,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Energia Elétrica",
+    "valor": 497.5,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Água e Esgoto",
+    "valor": 3130.88,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Telefone",
+    "valor": 277.06,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Espelho Pan Aluminio - Loja Cond NF 28996",
+    "valor": 195.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Honorario Desterro",
+    "valor": 1031.7,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Manutenção Elevadores - Silva & Machado NF 3792",
+    "valor": 534.18,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Seguro - Axa Seguros",
+    "valor": 1689.52,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Seguro - Tokio Marine",
+    "valor": 65.35,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Gás",
+    "valor": 1586.82,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Reparo Hidraulico - Ilha Nova Motobombas Serviços Ltda NF 47/66/48/68 - 5/5",
+    "valor": 1073.05,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Desentupimento em Geral",
+    "valor": 3181.93,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Manutenção Elevadores - Elevacon NF 13715 01/03",
+    "valor": 2580.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Manutenção Elevadores - Elevacon NF 13667 01/03",
+    "valor": 344.7,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Manutenção Elevadores - Elevacon NF 84451 01/03",
+    "valor": 430.67,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Manut. Contra Incendio",
+    "valor": 800.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Conserto Portão - Objetivo Segurança Eletronica NF 235",
+    "valor": 259.5,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Serviços de Reforma de Esgoto",
+    "valor": 1670.73,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Despesas Financeiras",
+    "valor": 96.83,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Desp. c/ Boletos Bancários",
+    "valor": 6.02,
+    "tipo": "item"
+  },
+  {
+    "descricao": "IR s/ Poupança",
+    "valor": 90.81,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Receitas - Despesas",
+    "valor": 6993.13,
+    "tipo": "total"
+  },
+  {
+    "descricao": "Saldo Atual",
+    "valor": 167717.16,
+    "tipo": "saldo"
+  }
+]

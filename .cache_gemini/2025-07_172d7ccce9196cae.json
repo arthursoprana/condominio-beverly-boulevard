@@ -1,0 +1,272 @@
+[
+  {
+    "descricao": "Saldo Anterior",
+    "valor": 68036.29,
+    "tipo": "saldo"
+  },
+  {
+    "descricao": "RECEITAS",
+    "valor": 71229.66,
+    "tipo": "total"
+  },
+  {
+    "descricao": "Receitas Operacionais",
+    "valor": 70610.13,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Taxas de Condomínio",
+    "valor": 45139.97,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Taxas Fundo de Reserva",
+    "valor": 4513.99,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Multas e Juros",
+    "valor": 155.88,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Taxa de Gás",
+    "valor": 1694.41,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Integralização/Capital/Distribuição",
+    "valor": 3.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Fundo de Encargos Trabalhista",
+    "valor": 3305.83,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Despesa com Manutenções",
+    "valor": 2510.82,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Recuperação Predial Externa",
+    "valor": 13286.23,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Receitas Financeiras",
+    "valor": 551.8,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Rendimento de Poupança",
+    "valor": 551.8,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Recuperação de Ativos",
+    "valor": 67.73,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Multa, Juros e Correção de Cobrança",
+    "valor": 67.73,
+    "tipo": "item"
+  },
+  {
+    "descricao": "DESPESAS",
+    "valor": 44938.36,
+    "tipo": "total"
+  },
+  {
+    "descricao": "Despesas com Pessoal",
+    "valor": 27940.56,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Salários/Outros Proventos",
+    "valor": 14640.37,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Vale Refeição",
+    "valor": 3667.44,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Vale Transporte",
+    "valor": 219.4,
+    "tipo": "item"
+  },
+  {
+    "descricao": "GPS s/ Folha e Pró-Labore",
+    "valor": 5960.84,
+    "tipo": "item"
+  },
+  {
+    "descricao": "FGTS",
+    "valor": 1326.68,
+    "tipo": "item"
+  },
+  {
+    "descricao": "PIS s/ Folha",
+    "valor": 165.83,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Mensalidade Sindical",
+    "valor": 46.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "ISS s/ Serviços",
+    "valor": 61.8,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Remuneração de Síndico",
+    "valor": 1852.2,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Despesas Administrativas",
+    "valor": 16862.61,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Energia Elétrica",
+    "valor": 437.67,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Água e Esgoto",
+    "valor": 5348.16,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Telefone",
+    "valor": 376.63,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Honorário Desterro",
+    "valor": 1031.7,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Manutenção Elevadores - Silva & Machado NF 3336",
+    "valor": 534.18,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Seguro - Tokio Marine",
+    "valor": 65.35,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Inspeção, Teste e Manutenção Alarme de Incêndio - Floriseg NF 297",
+    "valor": 391.96,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Gás",
+    "valor": 2493.68,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Reparo Hidraulico - Ilha Nova Motobombas Serviços Ltda NF 47/66/48/68 - 1/5",
+    "valor": 1073.07,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Reparo Hidraulico - Ilha Nova Motobombas Serviços Ltda NF 35 - 6/6",
+    "valor": 1661.3,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Azulejo 20x30 - Vicentina de Barros dos Santos NF 2610",
+    "valor": 420.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Despesas c/ Jardinagem",
+    "valor": 600.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Manutenção Elevadores - Elevacon NF 12495",
+    "valor": 455.29,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Manutenção Elevadores - Elevacon NF 12722",
+    "valor": 310.3,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Fort Atacadista NFCe 10094",
+    "valor": 83.22,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Serviço de Encanador",
+    "valor": 1345.1,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Certificado Digital - Fenacon",
+    "valor": 235.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Despesas Financeiras",
+    "valor": 135.19,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Despesas Bancárias",
+    "valor": 36.17,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Desp. c/ Boletos Bancários",
+    "valor": 43.75,
+    "tipo": "item"
+  },
+  {
+    "descricao": "IR s/ Poupança",
+    "valor": 55.27,
+    "tipo": "item"
+  },
+  {
+    "descricao": "CONTA TRANSITORIA",
+    "valor": 0.0,
+    "tipo": "subtotal"
+  },
+  {
+    "descricao": "Conta Transitória",
+    "valor": 0.0,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Movimentação Transitória - Receita",
+    "valor": -35381.65,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Movimentação Transitória - Despesa",
+    "valor": 35381.65,
+    "tipo": "item"
+  },
+  {
+    "descricao": "Receitas - Despesas",
+    "valor": 26291.3,
+    "tipo": "total"
+  },
+  {
+    "descricao": "Saldo Atual",
+    "valor": 94327.59,
+    "tipo": "saldo"
+  }
+]

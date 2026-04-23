@@ -19,7 +19,7 @@ import hashlib
 import json
 import os
 import sys
-import time
+from datetime import date
 from pathlib import Path
 
 import openpyxl
@@ -31,9 +31,12 @@ from google.genai import types
 
 # ── Configuração ─────────────────────────────────────────────────
 MODELO = "gemini-2.5-flash"
+MODELO_FALLBACK = "gemini-3.1-flash-lite-preview"  # 500 RPD vs 20 RPD do Flash
 CACHE_DIR = Path(".cache_gemini")
 PASTA_IMAGENS = Path("imagens")
 EXTENSOES_IMG = {".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".tif", ".pdf"}
+QUOTA_DIARIA = 20  # limite free tier RPD para gemini-2.5-flash
+USAGE_FILE = CACHE_DIR / "_usage.json"
 
 PROMPT = """Você está olhando para um demonstrativo financeiro mensal de um CONDOMÍNIO brasileiro
 (Demonstrativo de Receitas e Despesas). Sua tarefa: extrair TODAS as linhas que contêm um valor
@@ -66,7 +69,39 @@ Retorne APENAS um array JSON, sem texto extra.
 """
 
 
-def extrair_via_gemini(image_path: Path, client: genai.Client) -> list[dict]:
+def _ler_uso() -> dict:
+    """Lê contador de uso diário. Reseta se o dia mudou."""
+    if USAGE_FILE.exists():
+        data = json.loads(USAGE_FILE.read_text(encoding="utf-8"))
+        if data.get("data") == str(date.today()):
+            return data
+    return {"data": str(date.today()), "chamadas": 0}
+
+
+def _registrar_chamada():
+    """Incrementa contador de uso diário."""
+    uso = _ler_uso()
+    uso["chamadas"] += 1
+    CACHE_DIR.mkdir(exist_ok=True)
+    USAGE_FILE.write_text(json.dumps(uso), encoding="utf-8")
+
+
+def _verificar_quota(n_pendentes: int):
+    """Verifica se há quota suficiente antes de chamar a API."""
+    uso = _ler_uso()
+    restante = QUOTA_DIARIA - uso["chamadas"]
+    print(f"   📊 Quota: {uso['chamadas']}/{QUOTA_DIARIA} usadas hoje, {restante} restantes")
+    if restante <= 0:
+        raise RuntimeError(
+            f"⛔ Quota diária esgotada ({uso['chamadas']}/{QUOTA_DIARIA}). "
+            "Aguarde reset (meia-noite PT). Imagens já cacheadas continuam funcionando."
+        )
+    if n_pendentes > restante:
+        print(f"   ⚠️  {n_pendentes} imagens novas mas só {restante} chamadas restantes — "
+              f"processando apenas as primeiras {restante}")
+
+
+def extrair_via_gemini(image_path: Path, client: genai.Client, modelo: str = MODELO) -> list[dict]:
     """Extrai linhas do demonstrativo. Cacheia resultado por hash do arquivo."""
     img_bytes = image_path.read_bytes()
     img_hash = hashlib.sha256(img_bytes).hexdigest()[:16]
@@ -76,39 +111,49 @@ def extrair_via_gemini(image_path: Path, client: genai.Client) -> list[dict]:
         print(f"   📦 cache hit ({cache_file.name})")
         return json.loads(cache_file.read_text(encoding="utf-8"))
 
-    print(f"   🌐 chamando {MODELO}...")
+    print(f"   🌐 chamando {modelo}...")
+    uso = _ler_uso()
+    if uso["chamadas"] >= QUOTA_DIARIA:
+        raise RuntimeError(
+            f"⛔ Quota diária esgotada ({uso['chamadas']}/{QUOTA_DIARIA}). "
+            "Aguarde reset (meia-noite PT)."
+        )
     mime = "image/jpeg" if image_path.suffix.lower() in (".jpg", ".jpeg") else "image/png"
     if image_path.suffix.lower() == ".pdf":
         mime = "application/pdf"
 
-    ultimo_erro = None
-    for tentativa in range(1, 5):
-        try:
-            resp = client.models.generate_content(
-                model=MODELO,
-                contents=[
-                    types.Part.from_bytes(data=img_bytes, mime_type=mime),
-                    PROMPT,
-                ],
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    temperature=0,
-                    thinking_config=types.ThinkingConfig(thinking_budget=8000),
-                ),
-            )
-            break
-        except Exception as e:
-            ultimo_erro = e
-            msg = str(e)
-            # 503/429 são transitórios → backoff exponencial
-            if "503" in msg or "429" in msg or "UNAVAILABLE" in msg or "RESOURCE_EXHAUSTED" in msg:
-                espera = 2 ** tentativa
-                print(f"   ⏳ tentativa {tentativa} falhou ({msg[:80]}...), aguardando {espera}s")
-                time.sleep(espera)
-                continue
-            raise
-    else:
-        raise RuntimeError(f"Falha após 4 tentativas: {ultimo_erro}")
+    # Thinking config só para modelos que suportam (não-Lite)
+    cfg_kwargs = dict(
+        response_mime_type="application/json",
+        temperature=0,
+    )
+    if "lite" not in modelo.lower():
+        cfg_kwargs["thinking_config"] = types.ThinkingConfig(thinking_budget=8000)
+
+    try:
+        resp = client.models.generate_content(
+            model=modelo,
+            contents=[
+                types.Part.from_bytes(data=img_bytes, mime_type=mime),
+                PROMPT,
+            ],
+            config=types.GenerateContentConfig(**cfg_kwargs),
+        )
+        _registrar_chamada()
+    except Exception as e:
+        _registrar_chamada()  # falhas também contam na quota
+        msg = str(e)
+        if "429" in msg or "RESOURCE_EXHAUSTED" in msg:
+            raise RuntimeError(
+                "⛔ Quota diária esgotada. Aguarde reset (meia-noite PT). "
+                "Imagens já cacheadas continuam funcionando."
+            ) from e
+        if "503" in msg or "UNAVAILABLE" in msg:
+            raise RuntimeError(
+                "⛔ Modelo sobrecarregado (503 também gasta quota!). "
+                "Tente novamente mais tarde."
+            ) from e
+        raise
 
     rows = json.loads(resp.text)
     CACHE_DIR.mkdir(exist_ok=True)
@@ -404,6 +449,7 @@ def main():
     parser.add_argument("--pasta", type=Path, default=PASTA_IMAGENS,
                         help=f"Pasta com imagens (default: {PASTA_IMAGENS}/)")
     parser.add_argument("--saida", default="demonstrativos.xlsx", help="Excel de saída")
+    parser.add_argument("--modelo", default=MODELO, help=f"Modelo Gemini (default: {MODELO}, fallback: {MODELO_FALLBACK})")
     parser.add_argument("--no-cache", action="store_true", help="Ignora cache")
     args = parser.parse_args()
 
@@ -434,6 +480,16 @@ def main():
 
     print(f"📋 {len(img_paths)} imagem(ns) para processar")
 
+    # Contar quantas precisam de API (sem cache)
+    n_sem_cache = 0
+    for path in sorted(img_paths):
+        img_hash = hashlib.sha256(path.read_bytes()).hexdigest()[:16]
+        cache_file = CACHE_DIR / f"{path.stem}_{img_hash}.json"
+        if not cache_file.exists():
+            n_sem_cache += 1
+    if n_sem_cache > 0:
+        _verificar_quota(n_sem_cache)
+
     wb = openpyxl.Workbook()
     wb.remove(wb.active)
 
@@ -445,7 +501,7 @@ def main():
             continue
         print(f"\n📄 {path.name}")
         try:
-            rows = extrair_via_gemini(path, client)
+            rows = extrair_via_gemini(path, client, args.modelo)
         except Exception as e:
             print(f"   ❌ erro: {e}")
             continue
